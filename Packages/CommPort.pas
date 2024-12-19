@@ -102,6 +102,7 @@ type
     FReadSleep: Cardinal;
     FTimeouts: TPCommTimeouts;
     AsyncRead :TAsyncRead;
+    FErrorException :Boolean;
     FOnRead: TReadEvent;
     FOnErrors: TErrorsEvent;
 
@@ -122,6 +123,7 @@ type
     procedure SetBuffer(const Value: TCommBuffer);
     procedure SetReadSleep(const Value: Cardinal);
     procedure SetTimeouts(const Value: TPCommTimeouts);
+    procedure SetErrorException(const Value: Boolean);
   public
    property Handle: THandle read FHandle;
    property Connected: Boolean read FConnected write FConnected default False;
@@ -134,6 +136,7 @@ type
    property Buffer: TCommBuffer read FBuffer write SetBuffer;
    property ReadSleep: Cardinal read FReadSleep write SetReadSleep;
    property Timeouts: TPCommTimeouts read FTimeouts write SetTimeouts;
+   property ErrorException: Boolean read FErrorException write SetErrorException;
 
    property OnRead: TReadEvent read FOnRead write FOnRead;
    property OnErrors: TErrorsEvent read FOnErrors write FOnErrors;
@@ -158,6 +161,7 @@ type
      property Buffer;
      property ReadSleep;
      property Timeouts;
+     property ErrorException;
 
      property OnRead;
      property OnErrors;
@@ -358,6 +362,7 @@ begin
   FReadSleep:=0;
   FTimeouts:= TPCommTimeouts.Create;
   FTimeouts.SetCustomCommPort(Self);
+  FErrorException:=True;
 end;
 
 destructor TCustomCommPort.Destroy;
@@ -627,8 +632,12 @@ if ErrorCode > 0 then
       Win32Check(ErrorCode = 0);
     except
       on E:Exception do
-        ErrorMessage := e.message;
+        ErrorMessage:=e.message;
     end;
+
+if FErrorException then
+raise Exception.Create(ErrorMessage)
+Else
 OnErrors(Self, ErrorMessage, ErrorCode);
 end;
 end;
@@ -685,5 +694,10 @@ begin
   FTimeouts.Assign(Value);
 end;
 
+procedure TCustomCommPort.SetErrorException(const Value: Boolean);
+begin
+  if Value <> FErrorException then
+    FErrorException := Value;
+end;
 
 end.

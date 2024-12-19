@@ -70,6 +70,8 @@ end;
 procedure TForm1.CommPortErrors(Sender: TObject; ErrorMsg: string;
   ErrorCode: Int64);
 begin
+//CommPort:=False;
+
   {Memo.Lines.Add('');
   Memo.Lines.Add('ErrorCode: ' +ErrorCode.ToString);
   Memo.Lines.Add('ErrorMsg: '  +ErrorMsg);

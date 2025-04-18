@@ -507,7 +507,7 @@ SetLength(Buffer, Count);
 
 {$IFDEF Unicode}
 for I := 1 to Count do
-Buffer[i]:=AnsiChar(Byte(InBuffer[i]));
+Buffer[i]:=AnsiChar(Byte(AnsiString(InBuffer)[i]));
 {$ENDIF}
 
 InitAsync(AsyncPtr);
